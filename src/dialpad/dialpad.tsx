@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./dialpad.css"
 import { Modal, Button, Container, Row, Form, InputGroup } from "react-bootstrap"
 
@@ -7,6 +7,7 @@ export default function DialPad() {
     const [calling, setCalling] = useState(false);
     const [output, setOutput] = useState("");
     const openDialPad = (option: boolean) => toggleModal(option);
+    const regex = /^[0-9-+()]*$/;
 
     function clickDialPad(key: string) {
       if (output.length < 10) {
@@ -39,11 +40,43 @@ export default function DialPad() {
         // Toastr notification?
       }
     }
+    
+    function downHandler(event: KeyboardEvent) {
+      // TODO: make this a switch
+      if (event.key === "Backspace") {
+        deleteOutput();
+        return;
+      }
+  
+      if (event.key === "Enter") {
+        if (calling) {
+          return makeCall();
+        }
+        if (!calling) {
+          return hangUp();
+        }
+      }
+  
+      if (regex.test(event.key)) {
+        // This only half way works because for some reason output doesn't get 
+        // updated when clickDialPad is fired here. It's always an empty string on every
+        // keypress.
+        return clickDialPad(event.key);
+      }
+    }
+  
+    useEffect(() => {
+      window.addEventListener('keydown', downHandler);
+      // cleanup
+      return () => {
+        window.removeEventListener('keydown', downHandler);
+      };
+    }, []);
 
-    var button
+    var submitButton;
     calling
-    ? button = <Button size="lg" variant="danger" type="button" onClick={() => hangUp()}>End</Button>
-    : button = <Button size="lg" variant="success" type="button" onClick={() => makeCall()}>Call</Button>;
+    ? submitButton = <Button size="lg" variant="danger" type="button" onClick={() => hangUp()}>End</Button>
+    : submitButton = <Button size="lg" variant="success" type="button" onClick={() => makeCall()}>Call</Button>;
 
 
     return (
@@ -98,7 +131,7 @@ export default function DialPad() {
                 </div>
                 <div className="d-flex justify-content-center">
                   <Button size="lg" variant="light" type="button" onClick={() => deleteOutput()}>{'<'}</Button>
-                  {button}
+                  {submitButton}
                 </div>
               </Form>
             </Container>
