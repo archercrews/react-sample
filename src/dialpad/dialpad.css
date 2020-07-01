@@ -1,27 +1,4 @@
-.row {
-  margin: 0 auto;
-  width: 300px;
-  clear: both;
-  text-align: center;
-}
-
-.btn {
+.btn-light {
   font-size: 2rem;
-}
-
-input {
-  font-size: 2rem;
-}
-
-.input-group-text {
-  font-size: 1rem;
-}
-
-.hide-text {
-  color: transparent;
-}
-
-p {
-  font-weight: bold;
-  cursor: default;
+  width: 50px;
 }
